@@ -12313,45 +12313,201 @@ process.umask = function() { return 0; };
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _models_Search__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./models/Search */ "./src/js/models/Search.js");
+/* harmony import */ var _views_searchView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./views/searchView */ "./src/js/views/searchView.js");
+/* harmony import */ var _views_base__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./views/base */ "./src/js/views/base.js");
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+
+
+
+/** Global state */
+
+/*
+    -Search object
+    -Current recipe object
+    -shopping list object
+    -Liked recipes
+*/
+
+var state = {};
+
+var controlSearch = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+    var query;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            // 1 - Get query from view
+            query = _views_searchView__WEBPACK_IMPORTED_MODULE_1__["getInput"](); // todo
+
+            if (!query) {
+              _context.next = 6;
+              break;
+            }
+
+            // 2- New search object and add to state
+            state.search = new _models_Search__WEBPACK_IMPORTED_MODULE_0__["default"](query); // 3- Prepare UI for results
+            // 4- Search for recipes
+
+            _context.next = 5;
+            return state.search.getResults();
+
+          case 5:
+            // 5- render results on the UI
+            _views_searchView__WEBPACK_IMPORTED_MODULE_1__["renderResults"](state.search.result);
+
+          case 6:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function controlSearch() {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+_views_base__WEBPACK_IMPORTED_MODULE_2__["elements"].searchForm.addEventListener('submit', function (e) {
+  e.preventDefault();
+  controlSearch();
+});
+
+/***/ }),
+
+/***/ "./src/js/models/Search.js":
+/*!*********************************!*\
+  !*** ./src/js/models/Search.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Search; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-// const res = await axios(`https://forkify-api.herokuapp.com/api/search?&q=${this.query}`);
-// FOR RECIPES.js ===  const res = await axios(`https://forkify-api.herokuapp.com/api/get?rId=${this.id}`);
- // Global app controller
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function getResults(_x) {
-  return _getResults.apply(this, arguments);
-}
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _getResults() {
-  _getResults = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(query) {
-    var res;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return axios__WEBPACK_IMPORTED_MODULE_0___default()("https://forkify-api.herokuapp.com/api/search?&q=".concat(this.query));
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-          case 2:
-            res = _context.sent;
-            console.log(res);
 
-          case 4:
-          case "end":
-            return _context.stop();
-        }
+
+var Search = /*#__PURE__*/function () {
+  function Search(query) {
+    _classCallCheck(this, Search);
+
+    this.query = query;
+  }
+
+  _createClass(Search, [{
+    key: "getResults",
+    value: function () {
+      var _getResults = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(query) {
+        var proxy, res;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.prev = 0;
+                proxy = 'https://cors-anywhere.herokuapp.com/';
+                _context.next = 4;
+                return axios__WEBPACK_IMPORTED_MODULE_0___default()("".concat(proxy, "https://forkify-api.herokuapp.com/api/search?q=").concat(this.query));
+
+              case 4:
+                res = _context.sent;
+                this.result = res.data.recipes; // console.log(this.result);
+
+                _context.next = 11;
+                break;
+
+              case 8:
+                _context.prev = 8;
+                _context.t0 = _context["catch"](0);
+                alert(_context.t0);
+
+              case 11:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[0, 8]]);
+      }));
+
+      function getResults(_x) {
+        return _getResults.apply(this, arguments);
       }
-    }, _callee, this);
-  }));
-  return _getResults.apply(this, arguments);
-}
 
-getResults();
+      return getResults;
+    }()
+  }]);
+
+  return Search;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/js/views/base.js":
+/*!******************************!*\
+  !*** ./src/js/views/base.js ***!
+  \******************************/
+/*! exports provided: elements */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "elements", function() { return elements; });
+var elements = {
+  searchForm: document.querySelector('.search'),
+  searchInput: document.querySelector('.search__field'),
+  searchResList: document.querySelector('.results__list')
+};
+
+/***/ }),
+
+/***/ "./src/js/views/searchView.js":
+/*!************************************!*\
+  !*** ./src/js/views/searchView.js ***!
+  \************************************/
+/*! exports provided: getInput, clearInput, renderResults */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getInput", function() { return getInput; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearInput", function() { return clearInput; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderResults", function() { return renderResults; });
+/* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/js/views/base.js");
+
+var getInput = function getInput() {
+  return _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchInput.value;
+};
+var clearInput = function clearInput() {
+  return _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchInput.value = '';
+};
+
+var renderRecipe = function renderRecipe(recipe) {
+  var markup = "\n    <li>\n        <a class=\"results__link\" href=\"#".concat(recipe.recipe_id, "\">\n            <figure class=\"results__fig\">\n                <img src=\"").concat(recipe.image_url, "\" alt=\"").concat(recipe.title, "\">\n            </figure>\n            <div class=\"results__data\">\n                <h4 class=\"results__name\">").concat(recipe.title, "</h4>\n                <p class=\"results__author\">").concat(recipe.publisher, "</p>\n            </div>\n        </a>\n    </li>\n    ");
+  _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchResList.insertAdjacentHTML('beforeend', markup);
+};
+
+var renderResults = function renderResults(recipes) {
+  console.log(recipes);
+  recipes.forEach(renderRecipe);
+};
 
 /***/ }),
 

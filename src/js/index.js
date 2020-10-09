@@ -1,18 +1,46 @@
-// const res = await axios(`https://forkify-api.herokuapp.com/api/search?&q=${this.query}`);
-// FOR RECIPES.js ===  const res = await axios(`https://forkify-api.herokuapp.com/api/get?rId=${this.id}`);
+import Search from './models/Search';
+import * as searchView from './views/searchView';
+import { elements, renderLoader, clearLoader } from './views/base';
+/** Global state */
+/*
+    -Search object
+    -Current recipe object
+    -shopping list object
+    -Liked recipes
+*/
 
-import axios from 'axios';
+const state = {};
 
-// Global app controller
-async function getResults(query) {
-    try {
-        const proxy = 'https://cors-anywhere.herokuapp.com/';
-        const res = await axios(`${proxy}https://forkify-api.herokuapp.com/api/search?q=${query}`);
-        const recipes = res.data.recipes;
-        console.log(recipes);
-    } catch (error) {
-        alert(error);
+const controlSearch = async () => {
+    // 1 - Get query from view
+    const query = searchView.getInput(); // todo
+
+    if (query) {
+        // 2- New search object and add to state
+        state.search = new Search(query);
+
+        // 3- Prepare UI for results
+        searchView.clearInput();
+        searchView.clearResults();
+        renderLoader(elements.searchRes);
+
+        // 4- Search for recipes
+        await state.search.getResults();
+
+        // 5- render results on the UI
+        clearLoader();
+        searchView.renderResults(state.search.result);
+
     }
-        
 }
-getResults('chicken');
+
+elements.searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    controlSearch();
+
+})
+
+
+
+
+
