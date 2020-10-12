@@ -12345,22 +12345,26 @@ var controlSearch = /*#__PURE__*/function () {
             query = _views_searchView__WEBPACK_IMPORTED_MODULE_1__["getInput"](); // todo
 
             if (!query) {
-              _context.next = 6;
+              _context.next = 10;
               break;
             }
 
             // 2- New search object and add to state
             state.search = new _models_Search__WEBPACK_IMPORTED_MODULE_0__["default"](query); // 3- Prepare UI for results
-            // 4- Search for recipes
 
-            _context.next = 5;
+            _views_searchView__WEBPACK_IMPORTED_MODULE_1__["clearInput"]();
+            _views_searchView__WEBPACK_IMPORTED_MODULE_1__["clearResults"]();
+            Object(_views_base__WEBPACK_IMPORTED_MODULE_2__["renderLoader"])(_views_base__WEBPACK_IMPORTED_MODULE_2__["elements"].searchRes); // 4- Search for recipes
+
+            _context.next = 8;
             return state.search.getResults();
 
-          case 5:
+          case 8:
             // 5- render results on the UI
+            Object(_views_base__WEBPACK_IMPORTED_MODULE_2__["clearLoader"])();
             _views_searchView__WEBPACK_IMPORTED_MODULE_1__["renderResults"](state.search.result);
 
-          case 6:
+          case 10:
           case "end":
             return _context.stop();
         }
@@ -12464,16 +12468,31 @@ var Search = /*#__PURE__*/function () {
 /*!******************************!*\
   !*** ./src/js/views/base.js ***!
   \******************************/
-/*! exports provided: elements */
+/*! exports provided: elements, elementStrings, renderLoader, clearLoader */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "elements", function() { return elements; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "elementStrings", function() { return elementStrings; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderLoader", function() { return renderLoader; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearLoader", function() { return clearLoader; });
 var elements = {
   searchForm: document.querySelector('.search'),
   searchInput: document.querySelector('.search__field'),
+  searchRes: document.querySelector('.results'),
   searchResList: document.querySelector('.results__list')
+};
+var elementStrings = {
+  loader: 'loader'
+};
+var renderLoader = function renderLoader(parent) {
+  var loader = "\n        <div class=\"".concat(elementStrings.loader, "\">\n            <svg>\n                <use href=\"img/icons.svg#icon-cw\"></use>\n            </svg>\n        </div>\n    ");
+  parent.insertAdjacentHTML('afterbegin', loader);
+};
+var clearLoader = function clearLoader() {
+  var loader = document.querySelector(".".concat(elementStrings.loader));
+  if (loader) loader.parentElement.removeChild(loader);
 };
 
 /***/ }),
@@ -12482,13 +12501,14 @@ var elements = {
 /*!************************************!*\
   !*** ./src/js/views/searchView.js ***!
   \************************************/
-/*! exports provided: getInput, clearInput, renderResults */
+/*! exports provided: getInput, clearInput, clearResults, renderResults */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getInput", function() { return getInput; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearInput", function() { return clearInput; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearResults", function() { return clearResults; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderResults", function() { return renderResults; });
 /* harmony import */ var _base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./base */ "./src/js/views/base.js");
 
@@ -12496,11 +12516,32 @@ var getInput = function getInput() {
   return _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchInput.value;
 };
 var clearInput = function clearInput() {
-  return _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchInput.value = '';
+  _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchInput.value = '';
+};
+var clearResults = function clearResults() {
+  _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchResList.innerHTML = '';
+};
+
+var limitRecipeTitle = function limitRecipeTitle(title) {
+  var limit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 17;
+  var newTitle = [];
+
+  if (title.length > limit) {
+    title.split(' ').reduce(function (acc, curr) {
+      if (acc + curr.length <= limit) {
+        newTitle.push(curr);
+      }
+
+      return acc + curr.length;
+    }, 0);
+    return "".concat(newTitle.join(' '), " ...");
+  }
+
+  return title;
 };
 
 var renderRecipe = function renderRecipe(recipe) {
-  var markup = "\n    <li>\n        <a class=\"results__link\" href=\"#".concat(recipe.recipe_id, "\">\n            <figure class=\"results__fig\">\n                <img src=\"").concat(recipe.image_url, "\" alt=\"").concat(recipe.title, "\">\n            </figure>\n            <div class=\"results__data\">\n                <h4 class=\"results__name\">").concat(recipe.title, "</h4>\n                <p class=\"results__author\">").concat(recipe.publisher, "</p>\n            </div>\n        </a>\n    </li>\n    ");
+  var markup = "\n    <li>\n        <a class=\"results__link\" href=\"#".concat(recipe.recipe_id, "\">\n            <figure class=\"results__fig\">\n                <img src=\"").concat(recipe.image_url, "\" alt=\"").concat(recipe.title, "\">\n            </figure>\n            <div class=\"results__data\">\n                <h4 class=\"results__name\">").concat(limitRecipeTitle(recipe.title), "</h4>\n                <p class=\"results__author\">").concat(recipe.publisher, "</p>\n            </div>\n        </a>\n    </li>\n    ");
   _base__WEBPACK_IMPORTED_MODULE_0__["elements"].searchResList.insertAdjacentHTML('beforeend', markup);
 };
 
