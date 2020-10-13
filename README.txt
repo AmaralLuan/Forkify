@@ -1,0 +1,1 @@
+RUN npm run dev and npm run start 
